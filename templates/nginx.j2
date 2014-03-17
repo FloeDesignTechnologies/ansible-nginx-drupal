@@ -170,10 +170,10 @@ http {
     ## Block MIME type sniffing on IE.
     add_header X-Content-Options nosniff;
 
-    {% if nginx_drupal_php_handling == 'proxy' %}
+    {% if nginx_drupal_php_handling != 'proxy' %}
     ## Include the upstream servers for PHP FastCGI handling config.
     include upstream_php.conf;
-    {% else %}
+    {% endif %}
 
     ## Include the map to block HTTP methods.
     include map_block_http_methods.conf;
@@ -197,7 +197,7 @@ http {
     {% if nginx_drupal_php_handling == 'proxy' %}
       include reverse_proxy.conf;
       include upstream_php.conf;
-    {% else %}
+    {% endif %}
 
     ## Include the php-fpm status allowed hosts configuration block.
     ## Uncomment to enable if you're running php-fpm.
