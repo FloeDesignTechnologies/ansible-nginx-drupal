@@ -1,0 +1,27 @@
+---
+# defaults file for nginx-drupal
+nginx_drupal_git:
+  repo: "https://github.com/perusio/drupal-with-nginx.git"
+  version: "D7"
+
+nginx_drupal_config_path: "/etc/nginx"
+nginx_drupal_log_path: "/var/log/nginx"
+nginx_drupal_php_handling: "php-fpm"
+nginx_drupal_escape_uri: false
+nginx_drupal_use_boost: false
+nginx_drupal_use_drush: true
+nginx_drupal_allow_install: false
+nginx_drupal_use_spdy: false
+nginx_drupal_php_fpm_status_allowed_hosts: ["127.0.0.1", "192.168.1.0/24"]
+nginx_drupal_nginx_status_allowed_hosts: ["127.0.0.1", "192.168.1.0/24"]
+nginx_drupal_hotlinking_protection: false
+nginx_drupal_admin_basic_auth: false
+nginx_drupal_microcache: true
+nginx_drupal_microcache_auth: false
+nginx_drupal_upload_progress: true
+nginx_drupal_aio: true
+nginx_drupal_flv_streaming: true
+nginx_drupal_mp4_streaming: true
+nginx_drupal_upstream_servers: ["unix:/var/run/php-fpm.sock", "php-fpm-zwei.sock"]
+nginx_drupal_upstream_backup_servers: ["unix:/var/run/php-fpm-bkp.sock"]
+nginx_drupal_sites: none

@@ -1,0 +1,64 @@
+# -*- mode: nginx; mode: flyspell-prog;  ispell-local-dictionary: "american" -*-
+#{{ ansible_managed }}
+{%- if not nginx_drupal_php_handling == 'proxy' %}
+### Upstream configuration for PHP FastCGI.
+{%- else %}
+### Upstream configuration for Apache functioning has a PHP handler.
+{% endif %}
+
+## Add as many servers as needed:
+## Cf. http://wiki.nginx.org/HttpUpstreamModule.
+## Note that this configuration assumes by default that keepalive
+## upstream connections are supported and that you have a Nginx
+## version with the fair load balancer.
+
+{% set has_backup = False %}
+
+{% if nginx_drupal_php_handling == 'proxy' %}
+upstream phpapache {
+{% else %}
+upstream phpcgi {
+{% endif %}
+
+    ## Use the least connection algorithm for load balancing. This
+    ## algorithm was introduced in versions 1.3.1 and 1.2.2.
+    least_conn;
+
+    {% for server in nginx_drupal_upstream_servers -%}
+    server {{server}};
+    {% set has_backup = has_backup and server.backup %}
+    {%- endfor %}
+
+    ## Create a backend connection cache. Note that this requires
+    ## Nginx version greater or equal to 1.1.4.
+    ## Cf. http://nginx.org/en/CHANGES. Comment out the following
+    ## line if that's not the case.
+    keepalive 5;
+}
+
+{% if nginx_drupal_upstream_backup_servers %}
+{% if nginx_drupal_php_handling == 'proxy' %}
+upstream phpapache_backuo {
+{% else %}
+upstream phpcgi_backup {
+{% endif %}
+    {% for server in nginx_drupal_upstream_backup_servers -%}
+    server {{server}};
+    {%- endfor %}
+
+    ## Create a backend connection cache. Note that this requires
+    ## Nginx version greater or equal to 1.1.4.
+    ## Cf. http://nginx.org/en/CHANGES. Comment out the
+    ## following line if that's not the case.
+    keepalive 1;
+}
+{% endif %}
+
+{% if nginx_drupal_php_handling == 'php-fpm' %}
+{% for server in nginx_drupal_upstream_servers %}
+## The PHP TCP upstream that corresponds to the first pool: www{{loop.index0}}.
+upstream www{{loop.index0}} {
+    server {{server}};
+}
+{%- endfor %}
+{% endif %}

@@ -1,0 +1,11 @@
+# -*- mode: nginx; mode: flyspell-prog;  ispell-local-dictionary: "american" -*-
+#{{ ansible_managed }}
+### Configuration of php-fpm status and ping pages. Here we define the
+### allowed hosts using the Geo Module. http://wiki.nginx.org/HttpGeoModule
+
+geo $dont_show_fpm_status {
+    default 1;
+    {%- for host in nginx_drupal_php_fpm_status_allowed_hosts -%}
+    {{host}} 0;
+    {%- endfor %}
+}

@@ -1,0 +1,302 @@
+# -*- mode: nginx; mode: flyspell-prog;  ispell-current-dictionary: american -*-
+#{{ ansible_managed }}
+
+{% if item.http is defined %}
+{% if item.alternate_server_name is defined %}
+## Return (no rewrite) server block.
+server {
+    ## This is to avoid the spurious if for sub-domain name
+    ## "rewriting".
+    listen {{item.http.port}}; # IPv4
+    {% if item.ipv6 is defined %}
+    listen [{{item.ipv6}}]:{{item.http.port}} ipv6only=on;
+    {% endif %}
+    server_name item.alternate_server_name;
+    return 301 $scheme://{{item.server_name}}$request_uri;
+
+} # server domain return.
+{% endif %}
+
+## HTTP server.
+server {
+    listen {{item.http.port}}; # IPv4
+    {% if item.ipv6 is defined %}
+    listen [{{item.ipv6}}]:{{item.http.port}} ipv6only=on;
+    {% endif %}
+
+    server_name {{item.server_name}};
+    limit_conn {{item.limit_conn|default('arbeit 32')}};
+
+    ## Access and error logs.
+    access_log {{nginx_drupal_log_path}}/{{item.server_name}}_access.log;
+    error_log {{nginx_drupal_log_path}}/{{item.server_name}}_error.log;
+
+    ## See the blacklist.conf file at the parent dir: /etc/nginx.
+    ## Deny access based on the User-Agent header.
+    if ($bad_bot) {
+        return 444;
+    }
+    ## Deny access based on the Referer header.
+    if ($bad_referer) {
+        return 444;
+    }
+
+    ## Protection against illegal HTTP methods. Out of the box only HEAD,
+    ## GET and POST are allowed.
+    if ($not_allowed_method) {
+        return 405;
+    }
+
+    ## Filesystem root of the site and index.
+    root {{item.root}};
+    index index.php;
+
+    ## If you're using a Nginx version greater or equal to 1.1.4 then
+    ## you can use keep alive connections to the upstream be it
+    ## FastCGI or Apache. If that's not the case comment out the line below.
+    fastcgi_keep_conn on; # keep alive to the FCGI upstream
+
+    {% if nginx_drupal_php_handling == 'proxy' %}
+    proxy_http_version 1.1; # keep alive to the Apache upstream
+    {% endif %}
+
+
+    {%- if not nginx_drupal_use_boost %}
+    {%- if not nginx_drupal_escape_uri %}
+    ################################################################
+    ### Generic configuration: for most Drupal 7 sites.
+    ################################################################
+    include apps/drupal/drupal.conf;
+    {%- else %}
+    ################################################################
+    ### Configuration for Drupal 7 sites to serve URIs that need
+    ### to be **escaped**
+    ################################################################
+    include apps/drupal/drupal_escaped.conf;
+    {%- endif -%}
+    {%- else %}
+    {%- if not nginx_drupal_escape_uri %}
+    #################################################################
+    ### Configuration for Drupal 7 sites that use boost.
+    #################################################################
+    include apps/drupal/drupal_boost.conf;
+    {%- else %}
+    #################################################################
+    ### Configuration for Drupal 7 sites that use boost if having
+    ### to serve URIs that need to be **escaped**
+    #################################################################
+    include apps/drupal/drupal_boost_escaped.conf;
+    {%- endif -%}
+    {%- endif -%}
+
+    {%- if not nginx_drupal_use_drush %}
+    #################################################################
+    ### Configuration for updating the site via update.php and running
+    ### cron externally. If you don't use drush for running cron use
+    ### the configuration below.
+    #################################################################
+    include apps/drupal/drupal_cron_update.conf;
+    {%- endif -%}
+
+    ################################################################
+    ### Installation handling. This should be commented out after
+    ### installation if on an already installed site there's no need
+    ### to touch it. If on a yet to be installed site. Uncomment the
+    ### line below and comment out after installation. Note that
+    ### there's a basic auth in front as secondary ligne of defense.
+    ################################################################
+    {%- if nginx_drupal_allow_install %}
+    include apps/drupal/drupal_install.conf;
+    {%- else %}
+    #include apps/drupal/drupal_install.conf;
+    {%- endif -%}
+
+    {%- if nginx_drupal_upload_progress %}
+    #################################################################
+    ### Support for upload progress bar. Configurations differ for
+    ### Drupal 6 and Drupal 7.
+    #################################################################
+    include apps/drupal/drupal_upload_progress.conf;
+    {%- endif -%}
+
+    {%- if nginx_drupal_php_handling == 'proxy' %}
+    ## Including the php-fpm status and ping pages config.
+    include php_fpm_status_vhost.conf;
+    {%- endif -%}
+
+    ## Including the Nginx stub status page for having stats about
+    ## Nginx activity: http://wiki.nginx.org/HttpStubStatusModule.
+    include nginx_status_vhost.conf;
+
+} # HTTP server
+{% endif %}
+
+{% if item.https is defined %}
+{% if item.alternate_server_name %}
+## Return (no rewrite) server block.
+server {
+    ## This is to avoid the spurious if for sub-domain name
+    ## "rewriting".
+    {% if nginx_drupal_use_spdy %}
+    listen {{item.https.port}} ssl spdy; # IPv4
+    {% else %}
+    listen {{item.https.port}} ssl; # IPv4
+    {% endif %}
+
+    {% if item.ipv6 is defined %}
+    {% if nginx_drupal_use_spdy %}
+    listen [{{item.ipv6}}]:{{item.https.port}} ssl spdy ipv6only=on;
+    {% else %}
+    listen [{{item.ipv6}}]:{{item.https.port}} ssl ipv6only=on;
+    {% endif %}
+    {% endif %}
+
+    server_name {{item.alternate_server_name}};
+
+    ## Keep alive timeout set to a greater value for SSL/TLS.
+    keepalive_timeout 75 75;
+
+    ## See the keepalive_timeout directive in nginx.conf.
+    ## Server certificate and key.
+    ssl_certificate {{item.https.certificate}};
+    ssl_certificate_key {{item.https.certificate_key}};
+
+    return 301 $scheme://{{item.server_name}}$request_uri;
+
+} # server domain return.
+{% endif %}
+
+## HTTPS server.
+server {
+    {% if nginx_drupal_use_spdy %}
+    listen {{item.https.port}} ssl spdy; # IPv4
+    {% else %}
+    listen {{item.https.port}} ssl; # IPv4
+    {% endif %}
+
+    {% if item.ipv6 is defined %}
+    {% if nginx_drupal_use_spdy %}
+    listen [{{item.ipv6}}]:{{item.https.port}} ssl spdy ipv6only=on;
+    {% else %}
+    listen [{{item.ipv6}}]:{{item.https.port}} ssl ipv6only=on;
+    {% endif %}
+    {% endif %}
+
+    server_name {{item.server_name}};
+
+    limit_conn {{item.limit_conn|default('arbeit 32')}};
+
+    ## Access and error logs.
+    access_log {{nginx_drupal_log_path}}/{{item.server_name}}_access.log;
+    error_log {{nginx_drupal_log_path}}/{{item.server_name}}_error.log;
+
+    ## Keep alive timeout set to a greater value for SSL/TLS.
+    keepalive_timeout 75 75;
+
+    ## See the keepalive_timeout directive in nginx.conf.
+    ## Server certificate and key.
+    ssl_certificate {{item.https.certificate}};
+    ssl_certificate_key {{item.https.certificate_key}};
+
+    ## Strict Transport Security header for enhanced security. See
+    ## http://www.chromium.org/sts. I've set it to 2 hours; set it to
+    ## whichever age you want.
+    add_header Strict-Transport-Security {{item.https.sts|default('max-age=7200')}};
+
+    root {{item.root}};
+    index index.php;
+
+    ## If you're using a Nginx version greater or equal to 1.1.4 then
+    ## you can use keep alive connections to the upstream be it
+    ## FastCGI or Apache. If that's not the case comment out the line below.
+    fastcgi_keep_conn on; # keep alive to the FCGI upstream
+
+    {% if nginx_drupal_php_handling == 'proxy' %}
+    proxy_http_version 1.1; # keep alive to the Apache upstream
+    {% endif %}
+
+    ## See the blacklist.conf file at the parent dir: /etc/nginx.
+    ## Deny access based on the User-Agent header.
+    if ($bad_bot) {
+        return 444;
+    }
+    ## Deny access based on the Referer header.
+    if ($bad_referer) {
+        return 444;
+    }
+
+    ## Protection against illegal HTTP methods. Out of the box only HEAD,
+    ## GET and POST are allowed.
+    if ($not_allowed_method) {
+        return 405;
+    }
+
+    {% if not nginx_drupal_use_boost %}
+    {% if not nginx_drupal_escape_uri %}
+    ################################################################
+    ### Generic configuration: for most Drupal 7 sites.
+    ################################################################
+    include apps/drupal/drupal.conf;
+    {% else %}
+    ################################################################
+    ### Configuration for Drupal 7 sites to serve URIs that need
+    ### to be **escaped**
+    ################################################################
+    include apps/drupal/drupal_escaped.conf;
+    {% endif %}
+    {% else %}
+    {% if not nginx_drupal_escape_uri %}
+    #################################################################
+    ### Configuration for Drupal 7 sites that use boost.
+    #################################################################
+    include apps/drupal/drupal_boost.conf;
+    {% else %}
+    #################################################################
+    ### Configuration for Drupal 7 sites that use boost if having
+    ### to serve URIs that need to be **escaped**
+    #################################################################
+    include apps/drupal/drupal_boost_escaped.conf;
+    {% endif %}
+    {% endif %}
+
+    {% if not nginx_drupal_use_drush %}
+    #################################################################
+    ### Configuration for updating the site via update.php and running
+    ### cron externally. If you don't use drush for running cron use
+    ### the configuration below.
+    #################################################################
+    include apps/drupal/drupal_cron_update.conf;
+    {% endif %}
+
+    ################################################################
+    ### Installation handling. This should be commented out after
+    ### installation if on an already installed site there's no need
+    ### to touch it. If on a yet to be installed site. Uncomment the
+    ### line below and comment out after installation. Note that
+    ### there's a basic auth in front as secondary ligne of defense.
+    ################################################################
+    {% if nginx_drupal_allow_install %}
+    include apps/drupal/drupal_install.conf;
+    {% else %}
+    #include apps/drupal/drupal_install.conf;
+    {% endif %}
+
+    {%- if nginx_drupal_upload_progress %}
+    #################################################################
+    ### Support for upload progress bar. Configurations differ for
+    ### Drupal 6 and Drupal 7.
+    #################################################################
+    include apps/drupal/drupal_upload_progress.conf;
+    {%- endif -%}
+
+    {% if nginx_drupal_php_handling == 'proxy' %}
+    ## Including the php-fpm status and ping pages config.
+    include php_fpm_status_vhost.conf;
+    {% endif %}
+
+    ## Including the Nginx stub status page for having stats about
+    ## Nginx activity: http://wiki.nginx.org/HttpStubStatusModule.
+    include nginx_status_vhost.conf;
+
+} # HTTPS server
+{% endif %}

@@ -1,0 +1,24 @@
+---
+# tasks file for nginx-drupal
+- name: "Get configuration directory's .git stats"
+  stat: path={{nginx_drupal_config_path}}/.git
+  register: nginx_drupal_config_path_dot_git
+- include: git-checkout.yml
+  when: nginx_drupal_config_path_dot_git.stat.exists == false
+- name: "Create microcache directory"
+  file: path=/var/cache/nginx/microcache state=directory
+  when: nginx_drupal_microcache
+- name: "Override parametrized configuration files"
+  template: src={{item}}.j2 dest={{nginx_drupal_config_path}}/{{item}}.conf
+  with_items:
+    - apps/drupal/drupal
+    - php_fpm_status_allowed_hosts
+    - nginx_status_allowed_hosts
+    - nginx
+    - upstream_php
+  notify:
+    - reload nginx
+- include: sites.yml
+  when: nginx_drupal_sites|lower != 'none'
+- name: "Validate configuration"
+  shell: nginx -t

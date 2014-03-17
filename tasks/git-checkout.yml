@@ -1,0 +1,9 @@
+---
+- name: "Remove existing configurarion directory"
+  file: path={{nginx_drupal_config_path}} state=absent
+- name: "Checkout configuration directory"
+  git: dest={{nginx_drupal_config_path}} repo={{nginx_drupal_git.repo}} version={{nginx_drupal_git.version}}
+  notify:
+   - reload nginx
+- name: "Remove example.com configurarion file"
+  file: path={{nginx_drupal_config_path}}/sites-available/example.com.conf state=absent

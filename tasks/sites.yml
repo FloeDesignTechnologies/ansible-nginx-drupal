@@ -1,0 +1,18 @@
+---
+- name: "Create sites-enabled configuration directory"
+  file: path={{nginx_drupal_config_path}}/sites-enabled state=directory
+- name: "Create available sites configuration files"
+  template: src=sites-available/drupal-site.j2 dest={{nginx_drupal_config_path}}/sites-available/{{item.file_name}}.conf
+  with_items: nginx_drupal_sites
+- name: "Create enabled sites symlinks"
+  file: path={{nginx_drupal_config_path}}/sites-enabled/{{item.file_name}}.conf src={{nginx_drupal_config_path}}/sites-available/{{item.file_name}}.conf state=link
+  with_items: nginx_drupal_sites
+  when: item.enabled|default(True)
+  notify:
+   - reload nginx
+- name: "Remove disabled sites symlinks"
+  file: path={{nginx_drupal_config_path}}/sites-enabled/{{item.file_name}}.conf state=absent
+  with_items: nginx_drupal_sites
+  when: item.enabled|default(True) == False
+  notify:
+   - reload nginx
