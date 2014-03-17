@@ -170,8 +170,10 @@ http {
     ## Block MIME type sniffing on IE.
     add_header X-Content-Options nosniff;
 
-    ## Include upstream PHP handling server
+    {% if nginx_drupal_php_handling == 'proxy' %}
+    ## Include the upstream servers for PHP FastCGI handling config.
     include upstream_php.conf;
+    {% else %}
 
     ## Include the map to block HTTP methods.
     include map_block_http_methods.conf;
@@ -189,6 +191,13 @@ http {
     ## If the loadbalancer always sends the request in http protocol,
     ## and adds the server variable $http_x_forwarded_proto
     #include map_https_forwarded_proto.conf;
+
+    ## Include the upstream servers for Apache handling the PHP
+    ## processes. In this case Nginx functions as a reverse proxy.
+    {% if nginx_drupal_php_handling == 'proxy' %}
+      include reverse_proxy.conf;
+      include upstream_php.conf;
+    {% else %}
 
     ## Include the php-fpm status allowed hosts configuration block.
     ## Uncomment to enable if you're running php-fpm.
