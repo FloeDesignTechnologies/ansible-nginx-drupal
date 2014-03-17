@@ -1,5 +1,6 @@
 # -*- mode: nginx; mode: flyspell-prog;  ispell-local-dictionary: "american" -*-
-#{{ ansible_managed }}
+## {{ ansible_managed }}
+## Git ref: 81aa86d03f80e8f97d433cb541f63ee292531658
 {%- if not nginx_drupal_php_handling == 'proxy' %}
 ### Upstream configuration for PHP FastCGI.
 {%- else %}
