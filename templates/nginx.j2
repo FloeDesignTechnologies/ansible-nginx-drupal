@@ -20,6 +20,10 @@ events {
 }
 
 http {
+    {% for include in nginx_drupal_http_pre_includes %}
+    include {{include}};
+    {% endfor %}
+
     ## MIME types.
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
@@ -226,6 +230,10 @@ http {
     include proxy_microcache_zone.conf
     {%- endif -%}
     {%- endif -%}
+
+    {% for include in nginx_drupal_http_post_includes %}
+    include {{include}};
+    {% endfor %}
 
     ## Include all vhosts.
     include /etc/nginx/sites-enabled/*;
