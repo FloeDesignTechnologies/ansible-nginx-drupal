@@ -1,2 +1,4 @@
 ---
 # handlers file for nginx-drupal
+- name: validate nginx-drupal configuration
+  shell: nginx -t

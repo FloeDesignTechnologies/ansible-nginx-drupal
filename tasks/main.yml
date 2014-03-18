@@ -18,7 +18,6 @@
     - upstream_php
   notify:
     - reload nginx
+    - validate nginx-drupal configuration
 - include: sites.yml
   when: nginx_drupal_sites|lower != 'none'
-- name: "Validate configuration"
-  shell: nginx -t

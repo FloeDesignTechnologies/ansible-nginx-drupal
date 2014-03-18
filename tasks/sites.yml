@@ -9,10 +9,10 @@
   with_items: nginx_drupal_sites
   when: item.enabled|default(True)
   notify:
-   - reload nginx
+   - validate nginx-drupal configuration
 - name: "Remove disabled sites symlinks"
   file: path={{nginx_drupal_config_path}}/sites-enabled/{{item.file_name}}.conf state=absent
   with_items: nginx_drupal_sites
   when: item.enabled|default(True) == False
   notify:
-   - reload nginx
+   - validate nginx-drupal configuration
