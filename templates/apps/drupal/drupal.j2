@@ -290,10 +290,11 @@ location @drupal-no-args {
     include apps/drupal/fastcgi_no_args_drupal.conf;
     fastcgi_pass phpcgi;
 
-    {%- if nginx_drupal_microcache %}
+    {% if nginx_drupal_microcache %}
+    {% if not nginx_drupal_microcache_auth %}
     ## FastCGI microcache.
     include apps/drupal/microcache_fcgi.conf;
-    {%- if nginx_drupal_microcache_auth %}
+    {% else %}
     ## FCGI microcache for authenticated users also.
     include apps/drupal/microcache_fcgi_auth.conf;
     {%- endif -%}
@@ -306,9 +307,10 @@ location @drupal-no-args {
     proxy_set_header Connection '';
 
     {%- if nginx_drupal_microcache %}
+    {%- if not nginx_drupal_microcache_auth %}
     ## Proxy microcache.
     include apps/drupal/microcache_proxy.conf;
-    {%- if nginx_drupal_microcache_auth %}
+    {% else %}
     ## Proxy microcache for authenticated users also.
     include apps/drupal/microcache_proxy_auth.conf;
     {%- endif -%}
