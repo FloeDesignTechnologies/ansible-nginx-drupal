@@ -70,7 +70,7 @@ http {
     reset_timedout_connection on;
 
     ## Body size.
-    client_max_body_size 10m;
+    client_max_body_size {{nginx_drupal_http_core.client_max_body_size}};
 
     ## TCP options.
     tcp_nodelay on;
