@@ -3,7 +3,7 @@ galaxy_info:
   author: Pierre Buyle
   description: Ansible role to configure Nginx for running Drupal
   company: Phéromone
-  license: GPLv3
+  license: Apache v2
   min_ansible_version: 1.2
   platforms:
   - name: GenericUNIX

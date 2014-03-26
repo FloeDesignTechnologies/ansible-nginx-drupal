@@ -148,7 +148,7 @@ with image hot linking protection.
 License
 -------
 
-GPLv3
+Apache v2
 
 Author Information
 ------------------
