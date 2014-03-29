@@ -1,10 +1,6 @@
 ---
 # tasks file for nginx-drupal
-- name: "Get configuration directory's .git stats"
-  stat: path={{nginx_drupal_config_path}}/.git
-  register: nginx_drupal_config_path_dot_git
 - include: git-checkout.yml
-  when: nginx_drupal_config_path_dot_git.stat.exists == false
 - name: "Create microcache directory"
   file: path=/var/cache/nginx/microcache state=directory
   when: nginx_drupal_microcache
