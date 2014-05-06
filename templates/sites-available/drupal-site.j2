@@ -11,7 +11,7 @@ server {
     {% if item.ipv6 is defined %}
     listen [{{item.ipv6}}]:{{item.http.port}} ipv6only=on;
     {% endif %}
-    server_name item.alternate_server_name;
+    server_name {{item.alternate_server_name}};
     return 301 $scheme://{{item.server_name}}$request_uri;
 
 } # server domain return.
