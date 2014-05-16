@@ -2,3 +2,6 @@
 # handlers file for nginx-drupal
 - name: validate nginx-drupal configuration
   shell: nginx -t
+
+- name: reload nginx
+  service: name=nginx state=restarted
