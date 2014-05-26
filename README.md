@@ -72,6 +72,8 @@ The following variables are available to configure the role:
   to ```["unix:/var/run/php-fpm.sock", "php-fpm-zwei.sock"]```.
 - **nginx_drupal_upstream_backup_servers**: The list of PHP upstream backup
   servers, defaults to ```["unix:/var/run/php-fpm-bkp.sock"]```.
+- **nginx_drupal_language_path_prefixes**: (optional) The list of enabled
+  language path prefixes used on the site.
 - **nginx_drupal_sites**: The list of available sites.
     Each site uses the following structure:
     - **file_name**: The name of the site configuration file.
