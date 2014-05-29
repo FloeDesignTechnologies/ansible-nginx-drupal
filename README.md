@@ -80,7 +80,7 @@ The following variables are available to configure the role:
     - **http**: HTTP server configuration (leave empty to disable HTTP)
         - **port**: The port to listen on
     - **https**: HTTPS server configuration  (leave empty to disable HTTPS)
-        - **port**: The port to listen on
+        - **port**: The port to listen on.
         - **certificate**: Path to the SSL certificate of the server (in the PEM
           format).
         - **certificate_key**: Path to the SSL secret key of the server (in the
@@ -94,6 +94,10 @@ The following variables are available to configure the role:
     - **limit_conn**: (optional) The limit_conn for the site (defaults to
       ```arbeit 32```).
     - **enabled**: Whether or not the site should be enabled (defaults to true).
+    * **rewrites**: A list of rewrites directives, using the following structure:
+        - **regex**: The regular expression used to match the URI.
+        - **replacement**: The replacement pattern used for the rewrite.
+        - **flags**: (optiona) The flag parameter for the rewrite.
 
 
 Examples
@@ -127,8 +131,8 @@ HTTPS but disabled.
               certificate: /etc/nginx/ssl/bar.cert
               certificate_key: /etc/nginx/ssl/bar.key
 
-Nginx as a Reverse Proxy for a single Drupal 6 sites, without microcaching and
-with image hot linking protection.
+Nginx as a Reverse Proxy for a single Drupal 6 sites, without microcaching,
+with image hot linking protection and a rewrite directive.
 
 
     - hosts: all
@@ -146,6 +150,10 @@ with image hot linking protection.
             root: /var/www/foo
             http:
               port: 80
+            rewrites:
+             - regex: '^/foo-bar.htm$'
+               replacement: '/foo/bar'
+               flags: 'permanent'
 
 License
 -------
