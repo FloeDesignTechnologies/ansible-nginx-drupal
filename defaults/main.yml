@@ -30,3 +30,4 @@ nginx_drupal_sites: none
 nginx_drupal_http_pre_includes: []
 nginx_drupal_http_post_includes: []
 nginx_drupal_language_path_prefixes: []
+nginx_drupal_x_frame_options: DENY

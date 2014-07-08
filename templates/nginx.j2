@@ -160,16 +160,13 @@ http {
     ## https://www.owasp.org/index.php/List_of_useful_HTTP_headers.
     add_header X-XSS-Protection '1; mode=block';
 
+    {% if nginx_drupal_x_frame_options %}
     ## Enable clickjacking protection in modern browsers. Available in
     ## IE8 also. See
     ## https://developer.mozilla.org/en/The_X-FRAME-OPTIONS_response_header
     ## This may conflicts with pseudo streaming (at least with Nginx version 1.0.12).
-    ## Uncomment the line below if you're not using media streaming.
-    ## For sites being framing on the same domqin uncomment the line below.
-    #add_header X-Frame-Options SAMEORIGIN;
-    ## For sites accepting to be framed in any context comment the
-    ## line below.
-    add_header X-Frame-Options DENY;
+    add_header X-Frame-Options {{ nginx_drupal_x_frame_options }};
+    {% endif %}
 
     ## Block MIME type sniffing on IE.
     add_header X-Content-Options nosniff;
