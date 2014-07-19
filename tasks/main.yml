@@ -12,6 +12,7 @@
   template: src={{item}}.j2 dest={{nginx_drupal_config_path}}/{{item}}.conf
   with_items:
     - apps/drupal/drupal
+    - apps/drupal/drupal_boost
     - php_fpm_status_allowed_hosts
     - nginx_status_allowed_hosts
     - nginx
