@@ -75,6 +75,10 @@ The following variables are available to configure the role:
   servers, defaults to ```["unix:/var/run/php-fpm-bkp.sock"]```.
 - **nginx_drupal_language_path_prefixes**: (optional) The list of enabled
   language path prefixes used on the site.
+- **nginx_drupal_x_frame_options**: (optional) Value of the X-Frame-Options
+  response header, defaults to `DENY`. If the site uses frames, set to
+  `SAMEORIGIN`. `DENY` may conflicts with pseudo streaming (at least with Nginx
+  version 1.0.12)
 - **nginx_drupal_sites**: The list of available sites.
     Each site uses the following structure:
     - **file_name**: The name of the site configuration file.
