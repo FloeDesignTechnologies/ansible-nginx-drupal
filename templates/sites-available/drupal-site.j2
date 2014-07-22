@@ -238,6 +238,13 @@ server {
         return 405;
     }
 
+    {% if item.rewrites is defined %}
+    ## URL rewriting
+    {% for rewrite in item.rewrites %}
+    rewrite {{rewrite.regex}} {{rewrite.replacement}} {{rewrite.flags|default('')}};
+    {% endfor %}
+    {%- endif %}
+
     {% if not nginx_drupal_use_boost -%}
     {% if not nginx_drupal_escape_uri -%}
     ################################################################
