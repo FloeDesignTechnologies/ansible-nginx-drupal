@@ -397,3 +397,8 @@ location @empty {
 location ~* ^.+\.php$ {
     return 404;
 }
+
+## Add support for custom monitoring script.
+location = /monitor/index.php {
+  fastcgi_pass   phpcgi;
+}

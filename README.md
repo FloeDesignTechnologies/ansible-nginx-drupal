@@ -74,6 +74,10 @@ The following variables are available to configure the role:
   servers, defaults to ```["unix:/var/run/php-fpm-bkp.sock"]```.
 - **nginx_drupal_language_path_prefixes**: (optional) The list of enabled
   language path prefixes used on the site.
+- **nginx_drupal_x_frame_options**: (optional) Value of the X-Frame-Options
+  response header, defaults to `DENY`. If the site uses frames, set to
+  `SAMEORIGIN`. `DENY` may conflicts with pseudo streaming (at least with Nginx
+  version 1.0.12)
 - **nginx_drupal_sites**: The list of available sites.
     Each site uses the following structure:
     - **file_name**: The name of the site configuration file.
@@ -94,10 +98,11 @@ The following variables are available to configure the role:
     - **limit_conn**: (optional) The limit_conn for the site (defaults to
       ```arbeit 32```).
     - **enabled**: Whether or not the site should be enabled (defaults to true).
-    * **rewrites**: A list of rewrites directives, using the following structure:
+    - **rewrites**: (optional) A list of rewrites directives, using the following structure:
         - **regex**: The regular expression used to match the URI.
         - **replacement**: The replacement pattern used for the rewrite.
-        - **flags**: (optiona) The flag parameter for the rewrite.
+        - **flags**: (optional) The flag parameter for the rewrite.
+    - **includes**: (optional) A list of additional Nginx configuration files to incldue for the site.
 
 
 Examples
