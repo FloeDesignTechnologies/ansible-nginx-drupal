@@ -98,10 +98,11 @@ The following variables are available to configure the role:
     - **limit_conn**: (optional) The limit_conn for the site (defaults to
       ```arbeit 32```).
     - **enabled**: Whether or not the site should be enabled (defaults to true).
-    * **rewrites**: A list of rewrites directives, using the following structure:
+    - **rewrites**: (optional) A list of rewrites directives, using the following structure:
         - **regex**: The regular expression used to match the URI.
         - **replacement**: The replacement pattern used for the rewrite.
-        - **flags**: (optiona) The flag parameter for the rewrite.
+        - **flags**: (optional) The flag parameter for the rewrite.
+    - **includes**: (optional) A list of additional Nginx configuration files to incldue for the site.
 
 
 Examples

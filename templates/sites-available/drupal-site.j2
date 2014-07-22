@@ -67,6 +67,13 @@ server {
     {% endfor %}
     {%- endif %}
 
+    {% if item.includes is defined %}
+    ## Custom include(s)
+    {% for include in item.includes %}
+    include {{ include }};
+    {% endfor %}
+    {% endif %}
+
 
     {% if not nginx_drupal_use_boost -%}
     {% if not nginx_drupal_escape_uri -%}
@@ -244,6 +251,13 @@ server {
     rewrite {{rewrite.regex}} {{rewrite.replacement}} {{rewrite.flags|default('')}};
     {% endfor %}
     {%- endif %}
+
+    {% if item.includes is defined %}
+    ## Custom include(s)
+    {% for include in item.includes %}
+    include {{ include }};
+    {% endfor %}
+    {% endif %}
 
     {% if not nginx_drupal_use_boost -%}
     {% if not nginx_drupal_escape_uri -%}
