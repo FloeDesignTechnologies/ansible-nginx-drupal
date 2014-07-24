@@ -25,7 +25,9 @@ server {
     {% endif %}
 
     server_name {{item.server_name}};
+    {% if item.limit_conn != 'None' %}
     limit_conn {{item.limit_conn|default('arbeit 32')}};
+    {% endif %}
 
     ## Access and error logs.
     access_log {{nginx_drupal_log_path}}/{{item.server_name}}_{{item.file_name}}_access.log;
@@ -198,7 +200,9 @@ server {
 
     server_name {{item.server_name}};
 
+    {% if item.limit_conn != 'None' %}
     limit_conn {{item.limit_conn|default('arbeit 32')}};
+    {% endif %}
 
     ## Access and error logs.
     access_log {{nginx_drupal_log_path}}/{{item.server_name}}_access.log;
