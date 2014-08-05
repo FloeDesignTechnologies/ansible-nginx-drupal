@@ -24,7 +24,7 @@ server {
     listen [{{item.ipv6}}]:{{item.http.port}} ipv6only=on;
     {% endif %}
 
-    server_name {{item.server_name}};
+    server_name {{item.server_name}}{% if item.default is defined and item.default %} default{% endif %};
     {% if item.limit_conn != 'None' %}
     limit_conn {{item.limit_conn|default('arbeit 32')}};
     {% endif %}
