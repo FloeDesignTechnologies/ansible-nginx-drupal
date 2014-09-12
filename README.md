@@ -61,13 +61,14 @@ The following variables are available to configure the role:
   (cf. http://wiki.nginx.org/HttpFlvStreamModule), defaults to false.
 - **nginx_drupal_mp4_streaming**: Whether or not to use MP4 streaming, (cf.
   http://nginx.org/en/docs/http/ngx_http_mp4_module.html) defaults to false.
-- **nginx_drupal_http_pre_includes**: A list of file to include in the ```http```
-  context (in ```nginx.conf```), before any other directives.
-- **nginx_drupal_http_post_includes**: A list of file to include in the ```http```
-  context (in ```nginx.conf```), after any other directives except the enabled
+- **nginx_drupal_http_pre_includes**: A list of file to include in the
+  ```http```  context (in ```nginx.conf```), before any other directives.
+- **nginx_drupal_http_post_includes**: A list of file to include in the
+  ```http``` context (in ```nginx.conf```), after any other directives except
+  the enabled
   site configuration files.
-- **nginx_drupal_upstream_servers**: The list of PHP upstream servers, each item
-  is a server address (and parameters, see
+- **nginx_drupal_upstream_servers**: The list of PHP upstream servers, each
+  item is a server address (and parameters, see
   http://nginx.org/en/docs/http/ngx_http_upstream_module.html#server), defaults
   to ```["unix:/var/run/php-fpm.sock", "php-fpm-zwei.sock"]```.
 - **nginx_drupal_upstream_backup_servers**: The list of PHP upstream backup
@@ -85,24 +86,29 @@ The following variables are available to configure the role:
         - **port**: The port to listen on
     - **https**: HTTPS server configuration  (leave empty to disable HTTPS)
         - **port**: The port to listen on.
-        - **certificate**: Path to the SSL certificate of the server (in the PEM
-          format).
+        - **certificate**: Path to the SSL certificate of the server (in the
+          PEM format).
         - **certificate_key**: Path to the SSL secret key of the server (in the
           PEM format).
     - **server_name**: The (primary) server name.
     - **ipv6**: (optional) IPv6 address of the server
-    - **alternate_server_name**: (optional) Alternate server name, configured as
-      redirect to the primary server site. This can be used to remove the
+    - **alternate_server_name**: (optional) Alternate server name, configured
+      as redirect to the primary server site. This can be used to remove the
       ```www.``` prefix.
     - **root**: Path to the root directory for the site.
     - **limit_conn**: (optional) The limit_conn for the site (defaults to
       ```arbeit 32```).
     - **enabled**: Whether or not the site should be enabled (defaults to true).
-    - **rewrites**: (optional) A list of rewrites directives, using the following structure:
+    - **rewrites**: (optional) A list of rewrites directives, using the
+      following structure:
         - **regex**: The regular expression used to match the URI.
         - **replacement**: The replacement pattern used for the rewrite.
         - **flags**: (optional) The flag parameter for the rewrite.
-    - **includes**: (optional) A list of additional Nginx configuration files to incldue for the site.
+    - **includes**: (optional) A list of additional Nginx configuration files
+      to include for the site.
+    - **server_name_in_redirect**: (optional) Enables or disables the use of
+      the primary server name, specified by the server_name directive, in
+      redirects issued by nginx.
 
 
 Examples

@@ -62,6 +62,8 @@ server {
     proxy_http_version 1.1; # keep alive to the Apache upstream
     {% endif %}
 
+    server_name_in_redirect {{'on' if item.server_name_in_redirect|default(false) else 'off'}};
+
     {% if item.rewrites is defined %}
     ## URL rewriting
     {% for rewrite in item.rewrites %}
@@ -248,6 +250,8 @@ server {
     if ($not_allowed_method) {
         return 405;
     }
+
+    server_name_in_redirect {{'on' if item.server_name_in_redirect|default(false) else 'off'}};
 
     {% if item.rewrites is defined %}
     ## URL rewriting
