@@ -162,16 +162,13 @@ http {
     ## https://www.owasp.org/index.php/List_of_useful_HTTP_headers.
     add_header X-XSS-Protection '1; mode=block';
 
+    {% if nginx_drupal_x_frame_options %}
     ## Enable clickjacking protection in modern browsers. Available in
     ## IE8 also. See
     ## https://developer.mozilla.org/en/The_X-FRAME-OPTIONS_response_header
     ## This may conflicts with pseudo streaming (at least with Nginx version 1.0.12).
-    ## Uncomment the line below if you're not using media streaming.
-    ## For sites being framing on the same domqin uncomment the line below.
-    #add_header X-Frame-Options SAMEORIGIN;
-    ## For sites accepting to be framed in any context comment the
-    ## line below.
-    add_header X-Frame-Options DENY;
+    add_header X-Frame-Options {{ nginx_drupal_x_frame_options }};
+    {% endif %}
 
     ## Block MIME type sniffing on IE.
     add_header X-Content-Options nosniff;
@@ -213,10 +210,12 @@ http {
     ## Include the Nginx stub status allowed hosts configuration block.
     include nginx_status_allowed_hosts.conf;
 
+    {%- if not nginx_drupal_use_drush %}
     ## If you want to run cron using Drupal cron.php. i.e., you're not
     ## using drush then uncomment the line below. Specify in
     ## cron_allowed_hosts.conf which hosts can invole cron.
-    # include apps/drupal/cron_allowed_hosts.conf;
+    include apps/drupal/cron_allowed_hosts.conf;
+    {%- endif -%}
 
     ## Include blacklist for bad bot and referer blocking.
     include blacklist.conf;

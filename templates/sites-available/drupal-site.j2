@@ -25,7 +25,9 @@ server {
     {% endif %}
 
     server_name {{item.server_name}};
+    {% if item.limit_conn != 'None' %}
     limit_conn {{item.limit_conn|default('arbeit 32')}};
+    {% endif %}
 
     ## Access and error logs.
     access_log {{nginx_drupal_log_path}}/{{item.server_name}}_{{item.file_name}}_access.log;
@@ -59,6 +61,23 @@ server {
     {% if nginx_drupal_php_handling == 'proxy' %}
     proxy_http_version 1.1; # keep alive to the Apache upstream
     {% endif %}
+
+    server_name_in_redirect {{'on' if item.server_name_in_redirect|default(false) else 'off'}};
+
+    {% if item.rewrites is defined %}
+    ## URL rewriting
+    {% for rewrite in item.rewrites %}
+    rewrite {{rewrite.regex}} {{rewrite.replacement}} {{rewrite.flags|default('')}};
+    {% endfor %}
+    {%- endif %}
+
+    {% if item.includes is defined %}
+    ## Custom include(s)
+    {% for include in item.includes %}
+    include {{ include }};
+    {% endfor %}
+    {% endif %}
+
 
     {% if not nginx_drupal_use_boost -%}
     {% if not nginx_drupal_escape_uri -%}
@@ -183,7 +202,9 @@ server {
 
     server_name {{item.server_name}};
 
+    {% if item.limit_conn != 'None' %}
     limit_conn {{item.limit_conn|default('arbeit 32')}};
+    {% endif %}
 
     ## Access and error logs.
     access_log {{nginx_drupal_log_path}}/{{item.server_name}}_access.log;
@@ -229,6 +250,22 @@ server {
     if ($not_allowed_method) {
         return 405;
     }
+
+    server_name_in_redirect {{'on' if item.server_name_in_redirect|default(false) else 'off'}};
+
+    {% if item.rewrites is defined %}
+    ## URL rewriting
+    {% for rewrite in item.rewrites %}
+    rewrite {{rewrite.regex}} {{rewrite.replacement}} {{rewrite.flags|default('')}};
+    {% endfor %}
+    {%- endif %}
+
+    {% if item.includes is defined %}
+    ## Custom include(s)
+    {% for include in item.includes %}
+    include {{ include }};
+    {% endfor %}
+    {% endif %}
 
     {% if not nginx_drupal_use_boost -%}
     {% if not nginx_drupal_escape_uri -%}

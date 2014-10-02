@@ -124,6 +124,18 @@ location / {
         }
     }
 
+    {% if nginx_drupal_language_path_prefixes %}
+    ## RSS feed support.
+    location ~* ^(?:\/(?:{{ nginx_drupal_language_path_prefixes|join('|') }}))?\/rss\.xml$ {
+        try_files $uri @drupal-no-args;
+    }
+
+    ## XML Sitemap support.
+    location ~* ^(?:\/(?:{{ nginx_drupal_language_path_prefixes|join('|') }}))?\/sitemap\.xml$ {
+        try_files $uri @drupal-no-args;
+    }
+    {% endif %}
+
     ## All static files will be served directly.
     location ~* ^.+\.(?:css|cur|js|jpe?g|gif|htc|ico|png|html|xml|otf|ttf|eot|woff|svg)$ {
 
@@ -386,3 +398,7 @@ location ~* ^.+\.php$ {
     return 404;
 }
 
+## Add support for custom monitoring script.
+location = /monitor/index.php {
+  fastcgi_pass   phpcgi;
+}
