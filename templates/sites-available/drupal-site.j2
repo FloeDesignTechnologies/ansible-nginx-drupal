@@ -25,7 +25,7 @@ server {
     {% endif %}
 
     server_name {{item.server_name}};
-    {% if item.limit_conn != 'None' %}
+    {% if item.limit_conn is defined and item.limit_conn != 'None' %}
     limit_conn {{item.limit_conn|default('arbeit 32')}};
     {% endif %}
 
@@ -202,7 +202,7 @@ server {
 
     server_name {{item.server_name}};
 
-    {% if item.limit_conn != 'None' %}
+    {% if item.limit_conn is defined and item.limit_conn != 'None' %}
     limit_conn {{item.limit_conn|default('arbeit 32')}};
     {% endif %}
 
