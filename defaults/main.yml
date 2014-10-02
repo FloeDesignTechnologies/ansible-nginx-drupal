@@ -24,6 +24,7 @@ nginx_drupal_flv_streaming: true
 nginx_drupal_mp4_streaming: true
 nginx_drupal_http_core:
   client_max_body_size: "10m"
+  ssl_session_cache: true
 nginx_drupal_upstream_servers: ["unix:/var/run/php-fpm.sock", "php-fpm-zwei.sock"]
 nginx_drupal_upstream_backup_servers: ["unix:/var/run/php-fpm-bkp.sock"]
 nginx_drupal_sites: none

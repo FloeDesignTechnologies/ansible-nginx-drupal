@@ -100,12 +100,14 @@ http {
     ## Hide the Nginx version number.
     server_tokens off;
 
+    {% if nginx_drupal_http_core.ssl_session_cache %}
     ## Use a SSL/TLS cache for SSL session resume. This needs to be
     ## here (in this context, for session resumption to work. See this
     ## thread on the Nginx mailing list:
     ## http://nginx.org/pipermail/nginx/2010-November/023736.html.
     ssl_session_cache shared:SSL:30m;
     ssl_session_timeout 1d;
+    {% endif %}
 
     ## The server dictates the choice of cipher suites.
     ssl_prefer_server_ciphers on;

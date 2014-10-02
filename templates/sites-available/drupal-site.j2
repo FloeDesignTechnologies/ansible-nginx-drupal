@@ -131,7 +131,7 @@ server {
 {% endif %}
 
 {% if item.https is defined %}
-{% if item.alternate_server_name %}
+{% if item.alternate_server_name is defined %}
 ## Return (no rewrite) server block.
 server {
     ## This is to avoid the spurious if for sub-domain name
