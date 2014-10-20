@@ -78,6 +78,30 @@ server {
     {% endfor %}
     {% endif %}
 
+    {% if item.custom_locations is defined -%}
+    ## Custom location(s)
+    {% for location in item.custom_locations -%}
+    location {{ location.operator|default('=') }} "{{ location.path }}" {
+    {% if location.allowed_ips is defined -%}
+    {% for allowed_ip in location.allowed_ips %}
+    allow {{ allowed_ip }};
+    {% endfor %}
+    deny all;
+    {% endif %}
+    {%- if location.denied_ips is defined -%}
+    {%- for denied_ip in location.denied_ips %}
+    deny {{ denied_ip }};
+    {% endfor %}
+    {% endif -%}
+    {%- if location.fastcgi_pass is defined -%}
+    include fastcgi_params;
+        fastcgi_pass {{ location.fastcgi_pass }};
+    {% else %}
+    try_files $uri @drupal;
+    {% endif %}
+    }
+    {% endfor %}
+    {% endif %}
 
     {% if not nginx_drupal_use_boost -%}
     {% if not nginx_drupal_escape_uri -%}
@@ -264,6 +288,31 @@ server {
     ## Custom include(s)
     {% for include in item.includes %}
     include {{ include }};
+    {% endfor %}
+    {% endif %}
+
+    {% if item.custom_locations is defined %}
+    ## Custom location(s)
+    {% for location in item.custom_locations %}
+    location {{ location.operator }} "{{ location.path }}" {
+        {% if location.allowed_ips is defined %}
+            {% for allowed_ip in location.allowed_ips %}
+            allow {{ allowed_ip }};
+            {% endfor %}
+            deny all;
+        {% endif %}
+        {% if location.denied_ips is defined %}
+            {% for denied_ip in location.denied_ips %}
+            deny {{ denied_ip }};
+            {% endfor %}
+        {% endif %}
+        {% if location.fastcgi_pass is defined %}
+            include fastcgi_params;
+            fastcgi_pass {{ location.fastcgi_pass }};
+        {% else %}
+            try_files $uri @drupal;
+        {% endif %}
+    }
     {% endfor %}
     {% endif %}
 

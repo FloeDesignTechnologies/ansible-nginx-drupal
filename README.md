@@ -104,6 +104,13 @@ The following variables are available to configure the role:
         - **regex**: The regular expression used to match the URI.
         - **replacement**: The replacement pattern used for the rewrite.
         - **flags**: (optional) The flag parameter for the rewrite.
+    - **custom_locations**: (optional) A list of locations directives, using the
+      following structure:
+        - **operator**: (optional) Operator to match the location path (defaults to '=')
+        - **path**: Path string to match on
+        - **allowed_ips**: (optional) List of IP (with or without subnet) allowed to visit this location
+        - **denied_ips**: (optional)  List of IP (with or without subnet) denied to visit this location
+        - **fastcgi_pass**: (optional) fastcgi socket (or IP) to send to. If not specified, will use the @drupal location as upstream.
     - **includes**: (optional) A list of additional Nginx configuration files
       to include for the site.
     - **server_name_in_redirect**: (optional) Enables or disables the use of
