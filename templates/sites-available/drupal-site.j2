@@ -96,6 +96,9 @@ server {
     {%- if location.fastcgi_pass is defined -%}
     include fastcgi_params;
         fastcgi_pass {{ location.fastcgi_pass }};
+        {%- if location.fastcgi_index is defined -%}
+        fastcgi_index {{ location.fastcgi_index }};
+        {% endif %}
     {% else %}
     try_files $uri @drupal;
     {% endif %}
@@ -309,6 +312,9 @@ server {
         {% if location.fastcgi_pass is defined %}
             include fastcgi_params;
             fastcgi_pass {{ location.fastcgi_pass }};
+            {%- if location.fastcgi_index is defined -%}
+            fastcgi_index {{ location.fastcgi_index }};
+            {% endif %}
         {% else %}
             try_files $uri @drupal;
         {% endif %}

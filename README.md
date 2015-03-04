@@ -75,6 +75,7 @@ The following variables are available to configure the role:
   servers, defaults to ```["unix:/var/run/php-fpm-bkp.sock"]```.
 - **nginx_drupal_language_path_prefixes**: (optional) The list of enabled
   language path prefixes used on the site.
+- **nginx_drupal_set_real_ip_from**: (optional) configure real_ip if necessary
 - **nginx_drupal_x_frame_options**: (optional) Value of the X-Frame-Options
   response header, defaults to `DENY`. If the site uses frames, set to
   `SAMEORIGIN`. `DENY` may conflicts with pseudo streaming (at least with Nginx
@@ -111,6 +112,7 @@ The following variables are available to configure the role:
         - **allowed_ips**: (optional) List of IP (with or without subnet) allowed to visit this location
         - **denied_ips**: (optional)  List of IP (with or without subnet) denied to visit this location
         - **fastcgi_pass**: (optional) fastcgi socket (or IP) to send to. If not specified, will use the @drupal location as upstream.
+        - **fastcgi_index**: (optional) fastcgi index
     - **includes**: (optional) A list of additional Nginx configuration files
       to include for the site.
     - **server_name_in_redirect**: (optional) Enables or disables the use of

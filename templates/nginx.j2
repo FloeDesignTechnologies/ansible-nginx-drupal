@@ -39,7 +39,11 @@ http {
     ## static file serving.
     sendfile on;
     ## Handling of IPs in proxied and load balancing situations.
+    {% if nginx_drupal_set_real_ip_from is defined %}
+    set_real_ip_from {{ nginx_drupal_set_real_ip_from }};
+    {% else %}
     set_real_ip_from 0.0.0.0/32; # all addresses get a real IP.
+    {% endif %}
     real_ip_header X-Forwarded-For; # the ip is forwarded from the load balancer/proxy
 
     ## Define a zone for limiting the number of simultaneous
