@@ -134,6 +134,11 @@ location / {
     location ~* ^(?:\/(?:{{ nginx_drupal_language_path_prefixes|join('|') }}))?\/sitemap\.xml$ {
         try_files $uri @drupal-no-args;
     }
+
+    ## Core search support.
+    location ~* ^(?:\/(?:{{ nginx_drupal_language_path_prefixes|join('|') }}))?\/search/.+/.+ {
+        try_files $uri @drupal-no-args;
+    }
     {% endif %}
 
     ## All static files will be served directly.
@@ -152,7 +157,7 @@ location / {
     }
 
     ## Core search support.
-    location ~* (/[[:alpha:]-]+)?/search/.+/.+ {
+    location ~* ^/search/.+/.+ {
         try_files $uri @drupal-no-args;
     }
 
