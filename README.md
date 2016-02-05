@@ -92,6 +92,7 @@ The following variables are available to configure the role:
         - **certificate_key**: Path to the SSL secret key of the server (in the
           PEM format).
     - **server_name**: The (primary) server name.
+    - **default**: Indicate the virtual host as default (boolean).
     - **ipv6**: (optional) IPv6 address of the server
     - **alternate_server_name**: (optional) Alternate server name, configured
       as redirect to the primary server site. This can be used to remove the
