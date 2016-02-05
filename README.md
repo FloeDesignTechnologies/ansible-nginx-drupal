@@ -54,7 +54,9 @@ The following variables are available to configure the role:
 - **nginx_drupal_microcache_auth**: Whether or not to use microcaching for
   authenticated users, defaults to false.
 - **nginx_drupal_upload_progress**: Whether or not to use upload progress (this
-  require the
+  require the [filefield_nginx_progress](http://drupal.org/project/filefield_nginx_progress)
+  Drupal module and [nginx_uploadprogress_module](https://www.nginx.com/resources/wiki/modules/upload_progress/)
+  included in your Nginx build.
 - **nginx_drupal_aio**: Whether or not to use AIO to server video and audio
    file, defaults to true.
 - **nginx_drupal_flv_streaming**: Whether or not to use FLV pseudo streaming
