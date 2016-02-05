@@ -33,9 +33,10 @@ galaxy_info:
   - name: Debian
     versions:
     - all
-  categories:
-  - system
-  - web
+  galaxy_tags:
+    - system
+    - web
+    - drupal
 dependencies: []
   # List your role dependencies here, one per line. Only
   # dependencies available via galaxy should be listed here.
