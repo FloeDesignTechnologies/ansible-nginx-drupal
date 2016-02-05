@@ -4,9 +4,10 @@
   register: nginx_drupal_config_path_dot_git
 - name: "Remove existing configurarion directory"
   file: path={{nginx_drupal_config_path}} state=absent
-  when: nginx_drupal_config_path_dot_git.stat.exists == false
+  when: not nginx_drupal_config_path_dot_git.stat.exists
 - name: "Checkout configuration directory"
-  git: dest={{nginx_drupal_config_path}} repo={{nginx_drupal_git.repo}} version={{nginx_drupal_git.version}} force=no
+  git: dest={{nginx_drupal_config_path}} repo={{nginx_drupal_git.repo}} version={{nginx_drupal_git.version}} force=yes
+  when: (not nginx_drupal_config_path_dot_git.stat.exists) or (nginx_drupal_git.force_checkout|default(False))
   notify:
    - reload nginx
 - name: "Remove example.com configuration file"

@@ -23,9 +23,10 @@ The following variables are available to configure the role:
 - **nginx_drupal_git**
     - **repo**: The URL of the Git repository to checkout the base
     configuration from, defaults to https://github.com/perusio/drupal-with-nginx.git
-    - **version** The version of the version of the repository to
+    - **version**: The version of the version of the repository to
     check out. This can be the full 40-character SHA-1 hash, the literal string
     HEAD, a branch name, or a tag name. Defaults to 'D7'.
+    - **force_checkout**: True to always do a git checkout. Defaults to False. 
 - **nginx_drupal_config_path**: The path to Nginx configuration folder,
   defaults to "/etc/nginx".
 - **nginx_drupal_log_path**: The path to Nginx log files, defaults to
