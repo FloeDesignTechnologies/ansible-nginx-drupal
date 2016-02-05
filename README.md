@@ -55,7 +55,7 @@ The following variables are available to configure the role:
   authenticated users, defaults to false.
 - **nginx_drupal_upload_progress**: Whether or not to use upload progress (this
   require the
-- **nginx_drupal_use_aio**: Whether or not to use AIO to server video and audio
+- **nginx_drupal_aio**: Whether or not to use AIO to server video and audio
    file, defaults to true.
 - **nginx_drupal_flv_streaming**: Whether or not to use FLV pseudo streaming
   (cf. http://wiki.nginx.org/HttpFlvStreamModule), defaults to false.

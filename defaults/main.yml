@@ -20,8 +20,8 @@ nginx_drupal_microcache: true
 nginx_drupal_microcache_auth: false
 nginx_drupal_upload_progress: true
 nginx_drupal_aio: true
-nginx_drupal_flv_streaming: true
-nginx_drupal_mp4_streaming: true
+nginx_drupal_flv_streaming: false
+nginx_drupal_mp4_streaming: false
 nginx_drupal_http_core:
   client_max_body_size: "10m"
   ssl_session_cache: true
