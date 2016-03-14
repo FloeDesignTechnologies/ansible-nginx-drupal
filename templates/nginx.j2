@@ -118,16 +118,16 @@ http {
 
     ## Use only Perfect Forward Secrecy Ciphers. Fallback on non ECDH
     ## for crufty clients.
-    ssl_ciphers ECDH+aRSA+AESGCM:ECDH+aRSA+SHA384:ECDH+aRSA+SHA256:ECDH:EDH+CAMELLIA:EDH+aRSA:+CAMELLIA256:+AES256:+CAMELLIA128:+AES128:+SSLv3:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS:!RC4:!SEED:!ECDSA:CAMELLIA256-SHA:AES256-SHA:CAMELLIA128-SHA:AES128-SHA;
+    ssl_ciphers {{nginx_drupal_ssl_ciphers}};
 
     ## No SSL2 support. Legacy support of SSLv3.
-    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+    ssl_protocols {{nginx_drupal_ssl_protocols|join(" ")}};
 
     ## Pregenerated Diffie-Hellman parameters.
     ssl_dhparam /etc/nginx/dh_param.pem;
 
     ## Curve to use for ECDH.
-    ssl_ecdh_curve secp521r1;
+    ssl_ecdh_curve {{nginx_drupal_ssl_ecdh_curve}};
 
     ## Enable OCSP stapling. A better way to revocate server certificates.
     ssl_stapling on;
