@@ -34,9 +34,9 @@ The following variables are available to configure the role:
 - **nginx_drupal_php_handling**: The PHP handling method, one of "php-fpm",
   "php-cgi" or "proxy", defaults to "php-fpm".
 - **nginx_drupal_escape_uri**: Whether or not to escaped URIs, defaults to
-  false. **No implemented**
+  false. 
 - **nginx_drupal_use_boost**: Whether or not [Boost](http://drupal.org/project/boost)
-  is used, defaults to false. **No implemented**
+  is used, defaults to false. 
 - **nginx_drupal_use_drush**: Whether or not [Drush](https://github.com/drush-ops/drush)
   is used, defaults to true.
 - **nginx_drupal_allow_install**: Whether or not to allow access to the
