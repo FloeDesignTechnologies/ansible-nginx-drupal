@@ -64,6 +64,10 @@ The following variables are available to configure the role:
   (cf. http://wiki.nginx.org/HttpFlvStreamModule), defaults to false.
 - **nginx_drupal_mp4_streaming**: Whether or not to use MP4 streaming, (cf.
   http://nginx.org/en/docs/http/ngx_http_mp4_module.html) defaults to false.
+- **nginx_drupal_ssl_protocols**: List of protocols to enable, defaults to SSLv3, TLSv1, TLSv1.1, TLSv1.2
+- **nginx_drupal_ssl_ecdh_curve**: Curve to use for ECDH, defaults to secp521r1
+- **nginx_drupal_ssl_ciphers**: Ciphers to use
+  defaults to "ECDH+aRSA+AESGCM:ECDH+aRSA+SHA384:ECDH+aRSA+SHA256:ECDH:EDH+CAMELLIA:EDH+aRSA:+CAMELLIA256:+AES256:+CAMELLIA128:+AES128:+SSLv3:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS:!RC4:!SEED:!ECDSA:CAMELLIA256-SHA:AES256-SHA:CAMELLIA128-SHA:AES128-SHA"
 - **nginx_drupal_http_pre_includes**: A list of file to include in the
   ```http```  context (in ```nginx.conf```), before any other directives.
 - **nginx_drupal_http_post_includes**: A list of file to include in the
