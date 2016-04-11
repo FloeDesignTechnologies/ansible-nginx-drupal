@@ -106,33 +106,7 @@ server {
     {% endfor %}
     {% endif %}
 
-    {% if not nginx_drupal_use_boost -%}
-    {% if not nginx_drupal_escape_uri -%}
-    ################################################################
-    ### Generic configuration: for most Drupal 7 sites.
-    ################################################################
     include apps/drupal/drupal.conf;
-    {% else %}
-    ################################################################
-    ### Configuration for Drupal 7 sites to serve URIs that need
-    ### to be **escaped**
-    ################################################################
-    include apps/drupal/drupal_escaped.conf;
-    {%- endif -%}
-    {%- else %}
-    {%- if not nginx_drupal_escape_uri %}
-    #################################################################
-    ### Configuration for Drupal 7 sites that use boost.
-    #################################################################
-    include apps/drupal/drupal_boost.conf;
-    {%- else %}
-    #################################################################
-    ### Configuration for Drupal 7 sites that use boost if having
-    ### to serve URIs that need to be **escaped**
-    #################################################################
-    include apps/drupal/drupal_boost_escaped.conf;
-    {%- endif -%}
-    {%- endif -%}
 
     {%- if not nginx_drupal_use_drush %}
     #################################################################
@@ -322,33 +296,7 @@ server {
     {% endfor %}
     {% endif %}
 
-    {% if not nginx_drupal_use_boost -%}
-    {% if not nginx_drupal_escape_uri -%}
-    ################################################################
-    ### Generic configuration: for most Drupal 7 sites.
-    ################################################################
     include apps/drupal/drupal.conf;
-    {% else %}
-    ################################################################
-    ### Configuration for Drupal 7 sites to serve URIs that need
-    ### to be **escaped**
-    ################################################################
-    include apps/drupal/drupal_escaped.conf;
-    {%- endif -%}
-    {%- else %}
-    {%- if not nginx_drupal_escape_uri %}
-    #################################################################
-    ### Configuration for Drupal 7 sites that use boost.
-    #################################################################
-    include apps/drupal/drupal_boost.conf;
-    {%- else %}
-    #################################################################
-    ### Configuration for Drupal 7 sites that use boost if having
-    ### to serve URIs that need to be **escaped**
-    #################################################################
-    include apps/drupal/drupal_boost_escaped.conf;
-    {%- endif -%}
-    {%- endif -%}
 
     {%- if not nginx_drupal_use_drush %}
     #################################################################

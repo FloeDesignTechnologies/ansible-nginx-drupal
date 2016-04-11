@@ -13,6 +13,13 @@
 ###    installing the site) and update.php: all updates are now
 ###    handled through drush.
 
+{% if nginx_drupal_escape_uri %}
+## To avoid the ugly rewrite we use Lua to escape the URI.
+set_by_lua $escaped_uri 'return ngx.escape_uri(ngx.var.uri)';
+{% endif %}
+
+{% set _nginx_drupal_uri = '$escaped_uri' if nginx_drupal_escape_uri else '$uri' %}
+
 ## The 'default' location.
 location / {
 
@@ -33,7 +40,7 @@ location / {
 
         {%- if nginx_drupal_php_handling == 'proxy' %}
         ## Proxy configuration
-        proxy_pass http://phpapache/index.php?q=$uri;
+        proxy_pass http://phpapache/index.php?q={{_nginx_drupal_uri}};
         proxy_set_header Connection '';
         {%- endif -%}
 
@@ -59,7 +66,7 @@ location / {
 
         {%- if nginx_drupal_php_handling == 'proxy' %}
         ## Proxy configuration
-        proxy_pass http://phpapache/index.php?q=$uri;
+        proxy_pass http://phpapache/index.php?q={{_nginx_drupal_uri}};
         proxy_set_header Connection '';
         {% endif %}
 
@@ -80,7 +87,7 @@ location / {
 
         access_log off;
         expires 30d;
-        try_files $uri @drupal;
+        try_files {{_nginx_drupal_uri}} @drupal;
     }
 
     ## Drupal 7 generated image handling, i.e., imagecache in core. See:
@@ -93,7 +100,7 @@ location / {
 
         access_log off;
         expires 30d;
-        try_files $uri @drupal;
+        try_files {{_nginx_drupal_uri}} @drupal;
     }
 
     ## Advanced Aggregation module CSS
@@ -106,38 +113,43 @@ location / {
 
         location ~* /sites/default/files/advagg_css/css[_[:alnum:]]+\.css$ {
             access_log off;
-            try_files $uri @drupal;
+            try_files {{_nginx_drupal_uri}} @drupal;
         }
     }
 
     ## Advanced Aggregation module JS
     ## support. http://drupal.org/project/advagg.
     location ^~ /sites/default/files/advagg_js/ {
+    {% if nginx_drupal_use_boost %}
+        add_header Pragma '';
+        add_header Cache-Control 'public, max-age=946080000';
+    {% else %}
         expires max;
         add_header ETag '';
         add_header Last-Modified 'Wed, 20 Jan 1988 04:20:42 GMT';
+    {% endif %}
         add_header Accept-Ranges '';
 
         location ~* /sites/default/files/advagg_js/js[_[:alnum:]]+\.js$ {
             access_log off;
-            try_files $uri @drupal;
+            try_files {{_nginx_drupal_uri}} @drupal;
         }
     }
 
     {% if nginx_drupal_language_path_prefixes %}
     ## RSS feed support.
     location ~* ^(?:\/(?:{{ nginx_drupal_language_path_prefixes|join('|') }}))?\/rss\.xml$ {
-        try_files $uri @drupal-no-args;
+        try_files {{_nginx_drupal_uri}} @drupal-no-args;
     }
 
     ## XML Sitemap support.
     location ~* ^(?:\/(?:{{ nginx_drupal_language_path_prefixes|join('|') }}))?\/sitemap\.xml$ {
-        try_files $uri @drupal-no-args;
+        try_files {{_nginx_drupal_uri}} @drupal-no-args;
     }
 
     ## Core search support.
     location ~* ^(?:\/(?:{{ nginx_drupal_language_path_prefixes|join('|') }}))?\/search/.+/.+ {
-        try_files $uri @drupal-no-args;
+        try_files {{_nginx_drupal_uri}} @drupal-no-args;
     }
     {% endif %}
 
@@ -158,7 +170,7 @@ location / {
 
     ## Core search support.
     location ~* ^/search/.+/.+ {
-        try_files $uri @drupal-no-args;
+        try_files {{_nginx_drupal_uri}} @drupal-no-args;
     }
 
     ## PDFs and powerpoint files handling.
@@ -240,7 +252,7 @@ location / {
 
             {%- if nginx_drupal_php_handling == 'proxy' %}
             ## Proxy configuration
-            proxy_pass http://phpapache/index.php?q=$uri;
+            proxy_pass http://phpapache/index.php?q={{_nginx_drupal_uri}};
             proxy_set_header Connection '';
             {%- endif -%}
         }
@@ -253,9 +265,55 @@ location / {
         return 404;
     }
 
+    {% if nginx_drupal_use_boost %}
+    ## First we try the URI and relay to the @cache if not found.
+    try_files {{_nginx_drupal_uri}} @cache;
+    {% else %}
     ## First we try the URI and relay to the /index.php?q=$uri&$args if not found.
-    try_files $uri @drupal;
+    try_files {{_nginx_drupal_uri}} @drupal;
+    {% endif %}
 }
+
+{% if nginx_drupal_use_boost %}
+## We define a named location for the cache.
+location @cache {
+    ## Boost compresses can the pages so we check it. Comment it out
+    ## if you don't have it enabled in Boost.
+    gzip_static on;
+
+    ## Error page handler for the case where $no_cache is 1. POST
+    ## request or authenticated.
+    error_page 418 = @drupal;
+
+    ## If $no_cache is 1 then it means that either we have a session
+    ## cookie or that the request method is POST. So serve the dynamic
+    ## page.
+    if ($no_cache) {
+        return 418; # I'm a teapot/I can't get no cachifaction
+    }
+
+    ## No caching for POST requests.
+    if ($request_method = POST) {
+        return 418;
+    }
+
+    # Now for some header tweaking. We use a date that differs
+    # from stock Drupal. Everyone seems to be using their
+    # birthdate. Why go against the grain?
+    add_header Expires "Tue, 13 Jun 1977 03:45:00 GMT";
+    # We bypass all delays in the post-check and pre-check
+    # parameters of Cache-Control. Both set to 0.
+    add_header Cache-Control "must-revalidate, post-check=0, pre-check=0";
+    # Funny...perhaps. Egocentric? Damn right!;
+    add_header X-Header "Boost HelÃ¡s Avril 1.0";
+    ## Boost doesn't set a charset.
+    charset utf-8;
+
+    # We try each boost URI in succession, if every one of them
+    # fails then relay to Drupal.
+    try_files /cache/normal/$host${uri}_${args}.html /cache/perm/$host${uri}_.css /cache/perm/$host${uri}_.js /cache/$host/0$uri.html /cache/$host/0${uri}/index.html @drupal;
+}
+{% endif %}
 
 ########### Security measures ##########
 
@@ -286,7 +344,7 @@ location @drupal {
 
     {%- if nginx_drupal_php_handling == 'proxy' %}
     ## Proxy configutation
-    proxy_pass http://phpapache/index.php?q=$uri;
+    proxy_pass http://phpapache/index.php?q={{_nginx_drupal_uri}};
     proxy_set_header Connection '';
     {%- if nginx_drupal_microcache %}
     ## Proxy microcache.
@@ -325,7 +383,7 @@ location @drupal-no-args {
 
     {%- if nginx_drupal_php_handling == 'proxy' %}
     ## Proxy configutation
-    proxy_pass http://phpapache/index.php?q=$uri;
+    proxy_pass http://phpapache/index.php?q={{_nginx_drupal_uri}};
     proxy_set_header Connection '';
 
     {%- if nginx_drupal_microcache %}
@@ -377,17 +435,17 @@ location = /robots.txt {
     access_log off;
     ## Add support for the robotstxt module
     ## http://drupal.org/project/robotstxt.
-    try_files $uri @drupal-no-args;
+    try_files {{_nginx_drupal_uri}} @drupal-no-args;
 }
 
 ## RSS feed support.
 location = /rss.xml {
-    try_files $uri @drupal-no-args;
+    try_files {{_nginx_drupal_uri}} @drupal-no-args;
 }
 
 ## XML Sitemap support.
 location = /sitemap.xml {
-    try_files $uri @drupal-no-args;
+    try_files {{_nginx_drupal_uri}} @drupal-no-args;
 }
 
 ## Support for favicon. Return an 1x1 transparent GIF if it doesn't
@@ -413,9 +471,21 @@ location = /monitor/index.php {
   fastcgi_pass   phpcgi;
 }
 
-###
-### Rewrite legacy requests with /index.php to extension-free URL.
-###
+## Rewrite legacy requests with /index.php to extension-free URL.
 if ( $args ~* "^q=(?<query_value>.*)" ) {
   rewrite ^/index.php$ $scheme://$host/?q=$query_value? permanent;
 }
+
+{% if nginx_drupal_use_boost %}
+## Boost stats.
+location = /boost_stats.php {
+    {%- if nginx_drupal_php_handling == 'php-fpm' or nginx_drupal_php_handling == 'php-cgi' %}
+    fastcgi_pass phpcgi;
+    {% endif %}
+
+    {%- if nginx_drupal_php_handling == 'proxy' %}
+    ## Proxy configuration
+    proxy_pass http://phpapache
+    {% endif %}
+}
+{% endif %}
