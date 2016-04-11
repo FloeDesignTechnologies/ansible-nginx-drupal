@@ -471,6 +471,11 @@ location = /monitor/index.php {
   fastcgi_pass   phpcgi;
 }
 
+## Rewrite legacy requests with /index.php to extension-free URL.
+if ( $args ~* "^q=(?<query_value>.*)" ) {
+  rewrite ^/index.php$ $scheme://$host/?q=$query_value? permanent;
+}
+
 {% if nginx_drupal_use_boost %}
 ## Boost stats.
 location = /boost_stats.php {
