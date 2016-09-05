@@ -25,8 +25,8 @@ nginx_drupal_mp4_streaming: false
 nginx_drupal_http_core:
   client_max_body_size: "10m"
   ssl_session_cache: true
-nginx_drupal_ssl_protocols: [ "SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2" ]
-nginx_drupal_ssl_ecdh_curve: "secp521r1" 
+nginx_drupal_ssl_protocols: [ "TLSv1", "TLSv1.1", "TLSv1.2" ]
+nginx_drupal_ssl_ecdh_curve: "secp521r1"
 nginx_drupal_ssl_ciphers: "ECDH+aRSA+AESGCM:ECDH+aRSA+SHA384:ECDH+aRSA+SHA256:ECDH:EDH+CAMELLIA:EDH+aRSA:+CAMELLIA256:+AES256:+CAMELLIA128:+AES128:+SSLv3:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS:!RC4:!SEED:!ECDSA:CAMELLIA256-SHA:AES256-SHA:CAMELLIA128-SHA:AES128-SHA"
 nginx_drupal_upstream_servers: ["unix:/var/run/php-fpm.sock", "php-fpm-zwei.sock"]
 nginx_drupal_upstream_backup_servers: ["unix:/var/run/php-fpm-bkp.sock"]
