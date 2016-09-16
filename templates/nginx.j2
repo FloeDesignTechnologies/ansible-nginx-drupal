@@ -47,6 +47,12 @@ http {
     real_ip_header X-Forwarded-For; # the ip is forwarded from the load balancer/proxy
     real_ip_recursive on;
 
+    ## The ngx_http_limit_req_module module is used to limit the request processing rate
+    ## per a defined key, in particular, the processing rate of requests coming from a single IP address.
+    ## The limitation is done using the “leaky bucket” method. 
+    limit_req_zone $binary_remote_addr zone={{ nginx_drupal_remote_addr_http_req_limit_zone }}:{{ nginx_drupal_remote_addr_http_req_limit_period }} rate={{ nginx_drupal_remote_addr_http_req_limit_avg }}r/s;
+    limit_req_zone $server_name zone={{ nginx_drupal_server_name_http_req_limit_zone }}:{{ nginx_drupal_server_name_http_req_limit_period }} rate={{ nginx_drupal_server_name_http_req_limit_avg }}r/s;
+
     ## Define a zone for limiting the number of simultaneous
     ## connections nginx accepts. 1m means 32000 simultaneous
     ## sessions. We need to define for each server the limit_conn
