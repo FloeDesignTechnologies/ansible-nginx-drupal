@@ -17,6 +17,9 @@ server {
 } # server domain return.
 {% endif %}
 
+limit_req_zone $binary_remote_addr zone={{ nginx_drupal_remote_addr_http_req_limit_zone }}:{{ nginx_drupal_remote_addr_http_req_limit_period }} rate={{ nginx_drupal_remote_addr_http_req_limit_avg }}r/s;
+limit_req_zone $server_name zone={{ nginx_drupal_server_name_http_req_limit_zone }}:{{ nginx_drupal_server_name_http_req_limit_period }} rate={{ nginx_drupal_server_name_http_req_limit_avg }}r/s;
+
 ## HTTP server.
 server {
     listen {{item.http.port}}; # IPv4
@@ -28,6 +31,10 @@ server {
     {% if item.limit_conn|default('None') != 'None' %}
     limit_conn {{item.limit_conn|default('arbeit 32')}};
     {% endif %}
+
+    ## HTTP Request Limits
+    limit_req zone={{ nginx_drupal_remote_addr_http_req_limit_zone }} burst={{ nginx_drupal_remote_addr_http_req_limit_burst }} {{ nginx_drupal_remote_addr_http_req_limit_delay }};
+    limit_req zone={{ nginx_drupal_server_name_http_req_limit_zone }} burst={{ nginx_drupal_server_name_http_req_limit_burst }} {{ nginx_drupal_server_name_http_req_limit_delay }};
 
     ## Access and error logs.
     access_log {{nginx_drupal_log_path}}/{{item.server_name}}_{{item.file_name}}_access.log;
