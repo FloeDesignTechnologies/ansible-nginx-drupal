@@ -17,9 +17,6 @@ server {
 } # server domain return.
 {% endif %}
 
-limit_req_zone $binary_remote_addr zone={{ nginx_drupal_remote_addr_http_req_limit_zone }}:{{ nginx_drupal_remote_addr_http_req_limit_period }} rate={{ nginx_drupal_remote_addr_http_req_limit_avg }}r/s;
-limit_req_zone $server_name zone={{ nginx_drupal_server_name_http_req_limit_zone }}:{{ nginx_drupal_server_name_http_req_limit_period }} rate={{ nginx_drupal_server_name_http_req_limit_avg }}r/s;
-
 ## HTTP server.
 server {
     listen {{item.http.port}}; # IPv4
