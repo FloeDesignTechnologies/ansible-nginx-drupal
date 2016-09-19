@@ -32,6 +32,7 @@ server {
     ## HTTP Request Limits
     limit_req zone={{ nginx_drupal_remote_addr_http_req_limit_zone }} burst={{ nginx_drupal_remote_addr_http_req_limit_burst }} {{ nginx_drupal_remote_addr_http_req_limit_delay }};
     limit_req zone={{ nginx_drupal_server_name_http_req_limit_zone }} burst={{ nginx_drupal_server_name_http_req_limit_burst }} {{ nginx_drupal_server_name_http_req_limit_delay }};
+    limit_conn {{ nginx_drupal_remote_addr_conn_limit_zone }} {{ nginx_drupal_remote_addr_conn_limit }};
 
     ## Access and error logs.
     access_log {{nginx_drupal_log_path}}/{{item.server_name}}_{{item.file_name}}_access.log;

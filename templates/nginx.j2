@@ -34,7 +34,7 @@ http {
     ## Default log and error files.
     access_log /var/log/nginx/access.log;
     error_log /var/log/nginx/error.log;
-    log_format specialLog '$remote_addr forwarded for $http_x_forwarded_for - $remote_user [$time_local]  '
+    log_format specialLog '$remote_addr [fastly:$http_fastly_client_ip] forwarded for $http_x_forwarded_for - $remote_user [$time_local]  '
                       '"$request" $status $body_bytes_sent '
                       '"$http_referer" "$http_user_agent"';
 
@@ -66,6 +66,7 @@ http {
     ## ** instead. Comment out this
     ## ** one if not using nginx version >= 1.1.8.
     limit_conn_zone $binary_remote_addr zone=arbeit:10m;
+    limit_conn_zone $http_fastly_client_ip zone={{ nginx_drupal_remote_addr_conn_limit_zone }}:10m;
 
     ## Define a zone for limiting the number of simultaneous
     ## connections nginx accepts. 1m means 32000 simultaneous

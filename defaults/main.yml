@@ -35,8 +35,10 @@ nginx_drupal_http_pre_includes: []
 nginx_drupal_http_post_includes: []
 nginx_drupal_language_path_prefixes: []
 nginx_drupal_x_frame_options: DENY
-nginx_drupal_remote_addr_http_req_limit_avg: 20
-nginx_drupal_remote_addr_http_req_limit_burst: 40
+nginx_drupal_remote_addr_conn_limit: 5
+nginx_drupal_remote_addr_conn_limit_zone: per_fastly_client_ip
+nginx_drupal_remote_addr_http_req_limit_avg: 5
+nginx_drupal_remote_addr_http_req_limit_burst: 5
 nginx_drupal_remote_addr_http_req_limit_period: 10m
 nginx_drupal_remote_addr_http_req_limit_zone: perip
 nginx_drupal_remote_addr_http_req_limit_delay: nodelay
