@@ -34,7 +34,7 @@ http {
     ## Default log and error files.
     access_log /var/log/nginx/access.log;
     error_log /var/log/nginx/error.log;
-    log_format specialLog '$remote_addr [fastly:$http_fastly_client_ip] forwarded for $http_x_forwarded_for - $remote_user [$time_local]  '
+    log_format '$remote_addr [fastly:$http_fastly_client_ip] forwarded for $http_x_forwarded_for - $remote_user [$time_local]  '
                       '"$request" $status $body_bytes_sent '
                       '"$http_referer" "$http_user_agent"';
 
@@ -53,7 +53,7 @@ http {
     ## The ngx_http_limit_req_module module is used to limit the request processing rate
     ## per a defined key, in particular, the processing rate of requests coming from a single IP address.
     ## The limitation is done using the “leaky bucket” method. 
-    limit_req_zone $http_x_forwarded_for zone={{ nginx_drupal_remote_addr_http_req_limit_zone }}:{{ nginx_drupal_remote_addr_http_req_limit_period }} rate={{ nginx_drupal_remote_addr_http_req_limit_avg }}r/s;
+    limit_req_zone $http_fastly_client_ip zone={{ nginx_drupal_remote_addr_http_req_limit_zone }}:{{ nginx_drupal_remote_addr_http_req_limit_period }} rate={{ nginx_drupal_remote_addr_http_req_limit_avg }}r/s;
     limit_req_zone $server_name zone={{ nginx_drupal_server_name_http_req_limit_zone }}:{{ nginx_drupal_server_name_http_req_limit_period }} rate={{ nginx_drupal_server_name_http_req_limit_avg }}r/s;
 
     ## Define a zone for limiting the number of simultaneous
