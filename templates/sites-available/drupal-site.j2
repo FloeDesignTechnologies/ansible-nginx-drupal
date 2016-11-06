@@ -161,14 +161,18 @@ server {
 server {
     ## This is to avoid the spurious if for sub-domain name
     ## "rewriting".
-    {% if nginx_drupal_use_spdy %}
+    {% if nginx_drupal_use_http2 %}
+    listen {{item.https.port}} ssl http2; # IPv4
+    {% elif nginx_drupal_use_spdy %}
     listen {{item.https.port}} ssl spdy; # IPv4
     {% else %}
     listen {{item.https.port}} ssl; # IPv4
     {% endif %}
 
     {% if item.ipv6 is defined %}
-    {% if nginx_drupal_use_spdy %}
+    {% if nginx_drupal_use_http2 %}
+    listen [{{item.ipv6}}]:{{item.https.port}} ssl http2 ipv6only=on;
+    {% elif nginx_drupal_use_spdy %}
     listen [{{item.ipv6}}]:{{item.https.port}} ssl spdy ipv6only=on;
     {% else %}
     listen [{{item.ipv6}}]:{{item.https.port}} ssl ipv6only=on;
@@ -192,14 +196,18 @@ server {
 
 ## HTTPS server.
 server {
-    {% if nginx_drupal_use_spdy %}
+    {% if nginx_drupal_use_http2 %}
+    listen {{item.https.port}} ssl http2; # IPv4
+    {% elif nginx_drupal_use_spdy %}
     listen {{item.https.port}} ssl spdy; # IPv4
     {% else %}
     listen {{item.https.port}} ssl; # IPv4
     {% endif %}
 
     {% if item.ipv6 is defined %}
-    {% if nginx_drupal_use_spdy %}
+    {% if nginx_drupal_use_http2 %}
+    listen [{{item.ipv6}}]:{{item.https.port}} ssl http2 ipv6only=on;
+    {% elif nginx_drupal_use_spdy %}
     listen [{{item.ipv6}}]:{{item.https.port}} ssl spdy ipv6only=on;
     {% else %}
     listen [{{item.ipv6}}]:{{item.https.port}} ssl ipv6only=on;
